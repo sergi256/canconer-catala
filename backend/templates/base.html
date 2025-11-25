@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cançoner Català{% endblock %}</title>
+    <style>
+        /* ===== TIPOGRAFIA NOUCENTISTA ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Lato:wght@300;400&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Lato', 'Helvetica Neue', sans-serif;
+            font-weight: 300;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #2c2c2c;
+            background-color: #fdfbf7;
+        }
+        
+        /* ===== CONTENIDOR PRINCIPAL ===== */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+        
+        /* ===== CAPÇALERA ===== */
+        header {
+            background-color: #fff;
+            border-bottom: 1px solid #d4c5a9;
+            padding: 50px 0 40px;
+            margin-bottom: 60px;
+        }
+        
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 42px;
+            font-weight: 400;
+            color: #5a6c57;
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+            font-weight: 300;
+            color: #8b8271;
+            text-align: center;
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+        
+        .ornament {
+            text-align: center;
+            margin: 25px 0;
+            color: #c9b896;
+            font-size: 20px;
+            letter-spacing: 8px;
+        }
+        
+        /* ===== ESTADÍSTIQUES ===== */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin: 40px 0;
+            padding: 30px;
+            background-color: #f8f6f1;
+            border: 1px solid #e8e2d5;
+            border-radius: 2px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 600;
+            color: #5a6c57;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #8b8271;
+            margin-top: 5px;
+        }
+        
+        /* ===== CERCADOR ===== */
+        .search-box {
+            background-color: #fff;
+            padding: 40px;
+            border: 1px solid #d4c5a9;
+            margin-bottom: 50px;
+        }
+        
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+	    width: 100%;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+        }
+	
+        .form-row input[type="text"] {
+            flex: 6;
+        }
+        
+        .form-row select {
+            flex: 4;
+        }
+        
+        .form-row button {
+            flex: 0 0 auto;
+        }
+        
+        input[type="text"],
+        select {
+            flex: 1;
+            padding: 12px 18px;
+            font-family: 'Lato', sans-serif;
+            font-size: 15px;
+            border: 1px solid #d4c5a9;
+            background-color: #fdfbf7;
+            color: #2c2c2c;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #5a6c57;
+        }
+        
+        button {
+            padding: 12px 35px;
+            font-family: 'Lato', sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            background-color: #5a6c57;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #4a5c47;
+        }
+        
+        /* ===== TAULA DE RESULTATS ===== */
+        .results {
+            background-color: #fff;
+            border: 1px solid #d4c5a9;
+            margin-bottom: 60px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: #f8f6f1;
+            border-bottom: 2px solid #d4c5a9;
+        }
+        
+        th {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 18px 20px;
+            text-align: left;
+            color: #5a6c57;
+        }
+        
+        td {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e8e2d5;
+        }
+        
+        tbody tr:hover {
+            background-color: #fdfbf7;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 2px;
+            font-weight: 400;
+        }
+        
+        .badge-canconer { background-color: #e8f4f8; color: #5a6c57; }
+        .badge-folklore { background-color: #fff3e0; color: #8b6914; }
+        .badge-dansa { background-color: #f3e5f5; color: #6d4c7d; }
+        .badge-altres { background-color: #e8f5e9; color: #4a7c59; }
+        
+        .btn-detail {
+            font-size: 13px;
+            padding: 6px 18px;
+            background-color: transparent;
+            color: #5a6c57;
+            border: 1px solid #5a6c57;
+            letter-spacing: 1px;
+        }
+        
+        .btn-detail:hover {
+            background-color: #5a6c57;
+            color: #fff;
+        }
+        
+        /* ===== MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(44, 44, 44, 0.8);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: relative;
+            background-color: #fff;
+            max-width: 800px;
+            margin: 80px auto;
+            padding: 50px;
+            border: 1px solid #d4c5a9;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 32px;
+            color: #8b8271;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .modal-close:hover {
+            color: #5a6c57;
+        }
+        
+        .modal h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            font-weight: 400;
+            color: #5a6c57;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #d4c5a9;
+        }
+        
+        .detail-field {
+            margin-bottom: 25px;
+        }
+        
+        .detail-label {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #8b8271;
+            margin-bottom: 8px;
+        }
+        
+        .detail-value {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #2c2c2c;
+        }
+        
+        /* ===== PEU DE PÀGINA ===== */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid #d4c5a9;
+            margin-top: 80px;
+            color: #8b8271;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+            
+            h1 {
+                font-size: 32px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 25px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 12px;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Cançoner Català</h1>
+            <div class="ornament">· · ❦ · ·</div>
+            <p class="subtitle">Bibliografia del Cançoner Popular</p>
+        </div>
+    </header>
+    
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>Projecte de recerca bibliogràfica · Universitat de Catalunya</p>
+        </div>
+    </footer>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

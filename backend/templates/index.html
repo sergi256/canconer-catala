@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Cançoner Català - Bibliografia{% endblock %}
+
+{% block content %}
+<!-- Estadístiques -->
+<div class="stats">
+    <div class="stat-item">
+        <span class="stat-number">{{ stats.total }}</span>
+        <span class="stat-label">Registres totals</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number">{{ stats.Cançoner }}</span>
+        <span class="stat-label">Cançoner</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number">{{ stats.Folklore }}</span>
+        <span class="stat-label">Folklore</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number">{{ stats.Dansa }}</span>
+        <span class="stat-label">Dansa</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number">{{ stats.Altres }}</span>
+        <span class="stat-label">Altres</span>
+    </div>
+</div>
+
+<!-- Cercador -->
+<div class="search-box">
+    <form class="search-form" method="GET" action="/">
+        <div class="form-row">
+            <input type="text" 
+                   name="q" 
+                   placeholder="Cercar per autor, títol o característiques..."
+                   value="{{ query }}">
+            <select name="tipus">
+                <option value="">Tots els tipus</option>
+                <option value="Cançoner" {% if filter_tipus == 'Cançoner' %}selected{% endif %}>Cançoner</option>
+                <option value="Folklore" {% if filter_tipus == 'Folklore' %}selected{% endif %}>Folklore</option>
+                <option value="Dansa" {% if filter_tipus == 'Dansa' %}selected{% endif %}>Dansa</option>
+                <option value="Altres" {% if filter_tipus == 'Altres' %}selected{% endif %}>Altres</option>
+            </select>
+            <button type="submit">Cercar</button>
+        </div>
+    </form>
+</div>
+
+<!-- Resultats -->
+<div class="results">
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 80px;">Núm.</th>
+                <th style="width: 120px;">Tipus</th>
+                <th style="width: 250px;">Autor</th>
+                <th>Títol</th>
+                <th style="width: 120px;">Accions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registre in registres %}
+            <tr>
+                <td><strong>{{ registre.numero }}</strong></td>
+                <td>
+                    <span class="badge badge-{{ registre.tipus|lower }}">
+                        {{ registre.tipus }}
+                    </span>
+                </td>
+                <td>{{ registre.autor or '—' }}</td>
+                <td>{{ registre.titol }}</td>
+                <td>
+                    <button class="btn-detail" onclick="showDetail({{ registre.id }})">
+                        Veure detall
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal de detall -->
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle"></h2>
+        
+        <div class="detail-field">
+            <div class="detail-label">Número de referència</div>
+            <div class="detail-value" id="modalNumero"></div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-label">Tipus</div>
+            <div class="detail-value" id="modalTipus"></div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-label">Autor</div>
+            <div class="detail-value" id="modalAutor"></div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-label">Característiques</div>
+            <div class="detail-value" id="modalCaracteristiques"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function showDetail(id) {
+        try {
+            const response = await fetch(`/api/registre/${id}`);
+            const registre = await response.json();
+            
+            document.getElementById('modalTitle').textContent = registre.titol;
+            document.getElementById('modalNumero').textContent = registre.numero || '—';
+            document.getElementById('modalTipus').textContent = registre.tipus;
+            document.getElementById('modalAutor').textContent = registre.autor || '—';
+            document.getElementById('modalCaracteristiques').textContent = registre.caracteristiques || '—';
+            
+            document.getElementById('detailModal').style.display = 'block';
+        } catch (error) {
+            console.error('Error carregant detall:', error);
+            alert('Error carregant els detalls del registre');
+        }
+    }
+    
+    function closeModal() {
+        document.getElementById('detailModal').style.display = 'none';
+    }
+    
+    // Tancar modal clicant fora
+    window.onclick = function(event) {
+        const modal = document.getElementById('detailModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+    
+    // Tancar modal amb ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+</script>
+{% endblock %}

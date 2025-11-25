@@ -1,0 +1,147 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Llistat de Registres · Gestió{% endblock %}
+
+{% block content %}
+<div class="content-box">
+    <h2>Llistat de Registres Bibliogràfics</h2>
+    
+    <!-- Estadístiques ràpides -->
+    <div style="display: flex; gap: 30px; margin-bottom: 30px; padding: 20px; background: #1a1a1a; border-radius: 6px;align-items: baseline;">
+        <div>
+            <span style="color: #8b6914; font-weight: 600;">Total:</span>
+            <span style="color: #e8d4a0; font-size: 20px; font-weight: 700;">{{ stats.total }}</span>
+        </div>
+        <div>
+            <span style="color: #8b6914; font-weight: 600;">Cançoner:</span>
+            <span style="color: #8bb4d4;">{{ stats.Cançoner }}</span>
+        </div>
+        <div>
+            <span style="color: #8b6914; font-weight: 600;">Folklore:</span>
+            <span style="color: #d4b48b;">{{ stats.Folklore }}</span>
+        </div>
+        <div>
+            <span style="color: #8b6914; font-weight: 600;">Dansa:</span>
+            <span style="color: #b48bd4;">{{ stats.Dansa }}</span>
+        </div>
+        <div>
+            <span style="color: #8b6914; font-weight: 600;">Altres:</span>
+            <span style="color: #8bd4b4;">{{ stats.Altres }}</span>
+        </div>
+    </div>
+    
+    <!-- Cerca -->
+    <form class="search-bar" method="GET" action="/gestio/">
+        <input type="text" 
+               name="q" 
+               placeholder="Cercar per autor, títol, número o característiques..."
+               value="{{ query }}">
+        <select name="tipus">
+            <option value="">Tots els tipus</option>
+            <option value="Cançoner" {% if filter_tipus == 'Cançoner' %}selected{% endif %}>Cançoner</option>
+            <option value="Folklore" {% if filter_tipus == 'Folklore' %}selected{% endif %}>Folklore</option>
+            <option value="Dansa" {% if filter_tipus == 'Dansa' %}selected{% endif %}>Dansa</option>
+            <option value="Altres" {% if filter_tipus == 'Altres' %}selected{% endif %}>Altres</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Cercar</button>
+        {% if query or filter_tipus %}
+        <a href="/gestio/" class="btn btn-secondary">Netejar</a>
+        {% endif %}
+    </form>
+    
+    <!-- Resultats -->
+    {% if registres %}
+    <div style="margin-bottom: 20px; color: #8b6914;">
+        Mostrant {{ registres|length }} registres
+        {% if query %}amb la cerca "{{ query }}"{% endif %}
+        {% if filter_tipus %}del tipus "{{ filter_tipus }}"{% endif %}
+    </div>
+    
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 70px;">Núm.</th>
+                    <th style="width: 110px;">Tipus</th>
+                    <th style="width: 250px;">Autor</th>
+                    <th>Títol</th>
+                    <th style="width: 200px;">Accions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registre in registres %}
+                <tr>
+                    <td><strong style="color: #e8d4a0;">{{ registre.numero }}</strong></td>
+                    <td>
+                        <span class="badge badge-{{ registre.tipus|lower }}">
+                            {{ registre.tipus }}
+                        </span>
+                    </td>
+                    <td>{{ registre.autor or '—' }}</td>
+                    <td>{{ registre.titol }}</td>
+                    <td>
+                        <a href="/gestio/editar/{{ registre.id }}" class="btn btn-secondary" style="padding: 6px 16px; font-size: 11px;">
+                            ✎ Editar
+                        </a>
+                        <button onclick="confirmDelete({{ registre.id }}, '{{ registre.titol|replace("'", "\\'") }}')" 
+                                class="btn btn-danger" 
+                                style="padding: 6px 16px; font-size: 11px;">
+                            ✗ Esborrar
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Paginació (placeholder per futures implementacions) -->
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="?page={{ page - 1 }}{% if query %}&q={{ query }}{% endif %}{% if filter_tipus %}&tipus={{ filter_tipus }}{% endif %}">← Anterior</a>
+        {% endif %}
+        
+        {% for p in range(1, total_pages + 1) %}
+        <a href="?page={{ p }}{% if query %}&q={{ query }}{% endif %}{% if filter_tipus %}&tipus={{ filter_tipus }}{% endif %}" 
+           class="{% if p == page %}active{% endif %}">
+            {{ p }}
+        </a>
+        {% endfor %}
+        
+        {% if page < total_pages %}
+        <a href="?page={{ page + 1 }}{% if query %}&q={{ query }}{% endif %}{% if filter_tipus %}&tipus={{ filter_tipus }}{% endif %}">Següent →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div style="text-align: center; padding: 60px; color: #8b6914;">
+        <p style="font-size: 18px; margin-bottom: 15px;">✦</p>
+        <p>No s'han trobat registres amb aquests criteris.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function confirmDelete(id, titol) {
+        if (confirm(`Segur que vols esborrar el registre:\n\n"${titol}"?\n\nAquesta acció no es pot desfer.`)) {
+            // Crear formulari per enviar DELETE
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/gestio/esborrar/${id}`;
+            
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = '_method';
+            input.value = 'DELETE';
+            form.appendChild(input);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
+{% endblock %}

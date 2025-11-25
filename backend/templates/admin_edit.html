@@ -1,0 +1,114 @@
+{% extends "admin_base.html" %}
+
+{% block title %}{% if registre %}Editar Registre{% else %}Nou Registre{% endif %} · Gestió{% endblock %}
+
+{% block content %}
+<div class="content-box">
+    <h2>{% if registre %}Editar Registre #{{ registre.numero }}{% else %}Afegir Nou Registre{% endif %}</h2>
+    
+    <form method="POST" action="/gestio/desar">
+        {% if registre %}
+        <input type="hidden" name="id" value="{{ registre.id }}">
+        {% endif %}
+        
+         <div class="form-group">
+            <label for="tipus">Tipus de Document *</label>
+            <select id="tipus" name="tipus" required>
+                <option value="">Selecciona un tipus...</option>
+                {% for tipus in tipus_list %}
+                <option value="{{ tipus }}" 
+                        {% if registre and registre.tipus == tipus %}selected{% endif %}>
+                    {{ tipus }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="autor">Autor</label>
+            <input type="text" 
+                   id="autor" 
+                   name="autor" 
+                   value="{{ registre.autor if registre and registre.autor else '' }}"
+                   placeholder="Nom de l'autor o autors">
+        </div>
+        
+        <div class="form-group">
+            <label for="titol">Títol *</label>
+            <input type="text" 
+                   id="titol" 
+                   name="titol" 
+                   value="{{ registre.titol if registre else '' }}"
+                   placeholder="Títol de l'obra"
+                   required>
+        </div>
+        
+        <div class="form-group">
+            <label for="caracteristiques">Característiques</label>
+            <textarea id="caracteristiques" 
+                      name="caracteristiques" 
+                      placeholder="Descripció detallada: editorial, any, pàgines, contingut, etc.">{{ registre.caracteristiques if registre and registre.caracteristiques else '' }}</textarea>
+        </div>
+        
+        <div style="display: flex; gap: 15px; margin-top: 30px; padding-top: 25px; border-top: 1px solid #4a3a24;">
+            <button type="submit" class="btn btn-success">
+                ✓ {% if registre %}Actualitzar Registre{% else %}Crear Registre{% endif %}
+            </button>
+            <a href="/gestio/" class="btn btn-secondary">
+                ✗ Cancel·lar
+            </a>
+            {% if registre %}
+            <button type="button" 
+                    onclick="confirmDelete({{ registre.id }}, '{{ registre.titol|replace("'", "\\'") }}')" 
+                    class="btn btn-danger"
+                    style="margin-left: auto;">
+                🗑 Esborrar Registre
+            </button>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+{% if registre %}
+<div class="content-box" style="background: rgba(139, 105, 20, 0.1); border-color: #8b6914;">
+    <h2 style="color: #c9a961; font-size: 18px;">Informació del Registre</h2>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; font-size: 13px;">
+        <div>
+            <strong style="color: #8b6914;">ID Base de Dades:</strong>
+            <span style="color: #d4c5a0;">{{ registre.id }}</span>
+        </div>
+        <div>
+            <strong style="color: #8b6914;">Creat:</strong>
+            <span style="color: #d4c5a0;">—</span>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function confirmDelete(id, titol) {
+        if (confirm(`Segur que vols esborrar el registre:\n\n"${titol}"?\n\nAquesta acció no es pot desfer.`)) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/gestio/esborrar/${id}`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+    
+    // Validació del formulari abans d'enviar
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const numero = document.getElementById('numero').value;
+        const tipus = document.getElementById('tipus').value;
+        const titol = document.getElementById('titol').value;
+        
+        if (!numero || !tipus || !titol.trim()) {
+            e.preventDefault();
+            alert('Si us plau, omple tots els camps obligatoris marcats amb *');
+            return false;
+        }
+    });
+</script>
+{% endblock %}
