@@ -1,0 +1,15 @@
+[Unit]
+Description=Cançoner Català - Flask Application
+After=network.target
+
+[Service]
+Type=simple
+User=sergi
+WorkingDirectory=/home/sergi/git/projectes/canconer-catala
+ExecStart=/usr/bin/podman run --rm --name canconer -p 5001:5000 canconer-catala:latest
+ExecStop=/usr/bin/podman stop canconer
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
