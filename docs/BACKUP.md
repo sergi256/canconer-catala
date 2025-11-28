@@ -47,17 +47,21 @@ tar -xzf ~/backups/canconer/daily/canconer_YYYYMMDD_HHMMSS.tar.gz -C /tmp/test-b
 sqlite3 /tmp/test-backup/home/sergi/git/projectes/canconer-catala/db/canconer.db "SELECT COUNT(*) FROM bibliografia"
 ```
 
-## Backup extern recomanat
-Còpia setmanal a ubicació externa:
+## Backup extern
+## Sincronització automàtica Google Drive
+
+Cada commit al repositori desencadena backup automàtic a Google Drive via Git hook.
+
+**Configuració:**
+- Hook: `.git/hooks/post-commit`
+- Script: `~/backups/canconer/scripts/backup-to-gdrive.sh`
+- Destinació: `gdrive:Backups/Canconer/`
+- Sincronització completa de: `daily/`, `weekly/`, `monthly/`, `scripts/`
+
+**Verificar:**
 ```bash
-# USB/Disc extern
-cp -r ~/backups/canconer /media/usb/
-
-# Rsync a NAS/servidor remot
-rsync -avz ~/backups/canconer/ user@nas:/backups/canconer/
-
-# Cloud (rclone)
-rclone sync ~/backups/canconer/ remote:canconer-backups/
+rclone ls gdrive:Backups/Canconer/
+tail -f ~/backups/canconer/gdrive-sync.log
 ```
 
 ## Restauració
