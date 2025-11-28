@@ -7,7 +7,6 @@
 ├── daily/                         # Últims 7 dies
 ├── weekly/                        # Últimes 4 setmanes
 ├── monthly/                       # Últims 6 mesos
-├── manual/                        # Backups manuals
 └── backup.log                     # Historial execucions
 ```
 
