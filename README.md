@@ -30,3 +30,4 @@ En desenvolupament actiu.
 
 Sergi Catà de la Torra - Administrador del projecte
 # Test hook
+# Test2 hook
