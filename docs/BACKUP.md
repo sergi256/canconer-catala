@@ -16,10 +16,21 @@
 - Servei systemd: `canconer.service`
 - Crontab de l'usuari
 
-## Execució automàtica
-Cron diari a les 3:00 AM:
+## Execució automàtica: backup-canconer.sh i auto-commit-bd-sh
+Cron diari (3:00 AM):
 ```bash
-crontab -l  # Veure configuració actual
+# Backup local automàtic (diari/setmanal/mensual) amb rotació
+0 3 * * * /home/sergi/backups/canconer/scripts/backup-canconer.sh >> /home/sergi/backups/canconer/backup.log 2>&1
+```
+Cron diari (4:00 AM) detecta canvis reals a la BD i fa commit automàtic:
+```bash
+# Executa sqldump + md5sum sobre la BD, compara amb hash anterior
+# Si diferent → git commit + push → desencadena hook → backup Google Drive
+0 4 * * * ~/backups/canconer/scripts/auto-commit-bd.sh
+```
+**Logs:**
+```bash
+tail -f ~/backups/canconer/auto-commit-db.log
 ```
 
 ## Backup manual
