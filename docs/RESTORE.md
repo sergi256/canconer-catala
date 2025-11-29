@@ -55,7 +55,7 @@ podman build -t canconer-catala:latest .
 - Crear/actualitzar `canconer-catala.duckdns.org` → nova IP
 - Configurar port forwarding router: 80, 443 → Raspberry Pi
 
-## 7. Generar certificats SSL
+## 7. Generar certificats SSL (margenat.duckdns.org i canconer-catala.duckdns.org)
 ```bash
 # Aturar Nginx Docker si existeix
 docker stop my-nginx
@@ -80,12 +80,12 @@ sudo docker run --rm -it \
   --email TU_EMAIL \
   --agree-tos
 
-# Copiar certificats
-sudo rm /etc/nginx/certs/canconer-*
-sudo cp /etc/letsencrypt/live/canconer-catala.duckdns.org/fullchain.pem \
-   /etc/nginx/certs/canconer-fullchain.pem
-sudo cp /etc/letsencrypt/live/canconer-catala.duckdns.org/privkey.pem \
-   /etc/nginx/certs/canconer-privkey.pem
+# Copiar certificats a ubicació genèrica
+mkdir -p ~/ssl-certs/{margenat,canconer}
+sudo cp /etc/letsencrypt/live/margenat.duckdns.org/fullchain.pem ~/ssl-certs/margenat/
+sudo cp /etc/letsencrypt/live/margenat.duckdns.org/privkey.pem ~/ssl-certs/margenat/
+sudo cp /etc/letsencrypt/live/canconer-catala.duckdns.org/fullchain.pem ~/ssl-certs/canconer/
+sudo cp /etc/letsencrypt/live/canconer-catala.duckdns.org/privkey.pem ~/ssl-certs/canconer/
 ```
 
 ## 8. Configurar Nginx Docker
