@@ -4,6 +4,7 @@
 - Raspberry Pi amb Raspbian 12
 - Accés root/sudo
 - Backup descarregat a `/tmp/restore/`
+- **Configuració del servidor:** Veure `~/server-config/SETUP.md` per configuració base del sistema.
 
 ## 1. Instal·lació base
 ```bash
