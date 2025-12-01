@@ -59,7 +59,22 @@ sqlite3 /tmp/test-backup/home/sergi/git/projectes/canconer-catala/db/canconer.db
 ```
 
 ## Backup extern
-## Sincronització automàtica Google Drive
+
+### Backup a Pi-hole (automàtic)
+
+Sincronització diària (5:00 AM) via rsync:
+```crontab
+0 5 * * * ~/backups/canconer/scripts/backup-to-pihole.sh
+```
+
+**Destinació:** `sergi@192.168.1.199:~/backups/raspimarge2-canconer/`
+
+**Logs:**
+```bash
+tail -f ~/backups/canconer/pihole-sync.log
+```
+
+### Sincronització automàtica Google Drive
 
 Cada commit al repositori desencadena backup automàtic a Google Drive via Git hook.
 
