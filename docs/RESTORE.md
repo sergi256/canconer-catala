@@ -108,11 +108,19 @@ docker start my-nginx
 ```
 
 ## 9. Iniciar serveis
+
+### Configurar user service
 ```bash
-sudo systemctl daemon-reload
-sudo systemctl enable canconer.service
-sudo systemctl start canconer.service
-sudo systemctl status canconer.service
+mkdir -p ~/.config/systemd/user
+cp ~/git/projectes/canconer-catala/docs/canconer.service.example ~/.config/systemd/user/canconer.service
+
+# Habilitar linger (autostart)
+sudo loginctl enable-linger sergi
+
+# Activar servei
+systemctl --user daemon-reload
+systemctl --user enable canconer.service
+systemctl --user start canconer.service
 ```
 
 ## 10. Verificació

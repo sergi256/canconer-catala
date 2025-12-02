@@ -4,12 +4,12 @@ After=network.target
 
 [Service]
 Type=simple
-User=sergi
 WorkingDirectory=/home/sergi/git/projectes/canconer-catala
-ExecStart=/usr/bin/podman run --rm --name canconer -p 5001:5000 -v /home/sergi/git/projectes/canconer-catala/db:/app/db:Z canconer-catala:latest
+ExecStartPre=-/usr/bin/podman rm -f canconer
+ExecStart=/usr/bin/podman run --rm --name canconer -p 5001:5000 -v /home/sergi/git/projectes/canconer-catala/db:/app/db:Z -v /home/sergi/git/projectes/canconer-catala/backend:/app/backend:Z canconer-catala:latest
 ExecStop=/usr/bin/podman stop canconer
 Restart=always
 RestartSec=10
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
