@@ -104,3 +104,6 @@ du -sh ~/backups/canconer/*
 # Últim backup
 ls -lht ~/backups/canconer/daily/ | head -2
 ```
+
+## Monitorització
+Veure documentació completa: `~/server-config/monitoring.md`
