@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import date
 
 db = SQLAlchemy()
 
@@ -40,3 +41,31 @@ class Bibliografia(db.Model):
             'titol': self.titol,
             'caracteristiques': self.caracteristiques
         }
+
+
+class DailyVisit(db.Model):
+    """Model per registrar visites úniques per dia"""
+    __tablename__ = 'daily_visits'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    ip_hash = db.Column(db.String(16), nullable=False)
+    visit_date = db.Column(db.Date, nullable=False, default=date.today)
+    
+    # Índex únic per evitar duplicats (una IP només compta una vegada per dia)
+    __table_args__ = (
+        db.UniqueConstraint('ip_hash', 'visit_date', name='unique_daily_visit'),
+    )
+    
+    def __repr__(self):
+        return f'<DailyVisit {self.ip_hash[:8]}... on {self.visit_date}>'
+
+
+class Stats(db.Model):
+    """Model per guardar estadístiques diverses"""
+    __tablename__ = 'stats'
+    
+    key = db.Column(db.String(50), primary_key=True)
+    value = db.Column(db.Integer, default=0, nullable=False)
+    
+    def __repr__(self):
+        return f'<Stats {self.key}: {self.value}>'

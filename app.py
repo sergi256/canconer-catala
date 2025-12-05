@@ -4,6 +4,7 @@ import random
 from config import config
 from backend.models import db, Tipus, Bibliografia
 from backend.auth import auth
+from backend.utils import register_daily_visit
 
 def create_app(config_name='default'):
     """Factory per crear l'aplicació Flask"""
@@ -21,7 +22,9 @@ def create_app(config_name='default'):
     @app.route('/')
     def index():
         """Pàgina principal amb cerca"""
-        # ... (mantén el codi actual sense canvis)
+        # Registrar visita única diària
+        visit_count = register_daily_visit(request)
+        
         query = request.args.get('q', '').strip()
         filter_tipus = request.args.get('tipus', '').strip()
         
@@ -67,7 +70,8 @@ def create_app(config_name='default'):
                              stats=stats,
                              registres=registres,
                              query=query,
-                             filter_tipus=filter_tipus)
+                             filter_tipus=filter_tipus,
+                             visit_count=visit_count)
     
     @app.route('/api/registre/<int:id>')
     def api_registre(id):
